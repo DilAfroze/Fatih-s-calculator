@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Cutter Data Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Montserrat&family=Sacramento&display=swap" rel="stylesheet">
+
+  </head>
+  <body>
+    <h1>Milling data Calculator</h1>
+
+    <div class="container">
+
+      <table id="calculator" frame="border" >
+          <thead>
+              <tr>
+                  <th colspan="2" id="calculator_intro">[Fatih's cool cutting data calculator]</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>[Choose Cutter]</td>
+                  <td><select id="cutter_type" onchange="changeText()">
+                      <option>Fräsername</option>
+                      <option>Radiusfräser Klein v 1</option>
+                      <option>Radiusfräser Klein v 2</option>
+                      <option>Radiusfräser Klein v 3</option>
+                      <option>Radiusfräser mittel v 1</option>
+                      <option>Radiusfräser mittel v 2</option>
+                      <option>Radiusfräser mittel v 3</option>
+                      <option>Radiusfräser groß v 1</option>
+                      <option>Radiusfräser groß v 2</option>
+                      <option>Radiusfräser groß v 3</option>
+                  </select></td>
+              </tr>
+              
+              <tr>
+                  <td ><strong>[Parameters]</strong></td>
+              </tr>
+              
+              <tr>
+                  <td>[Diameter d[mm]]</td>
+                  <td id ="output_diameter" class="output_fields">Eingabefeld</td>
+              </tr>
+              
+              <tr>
+                  <td>[step width br [mm]]</td>
+          <td><input id="step_input" type="text" onkeypress="if (event.key === 'Enter') { checkStepWidth(); }" onblur="checkStepWidth()" placeholder="Eingabefeld"></td>
+              </tr>
+              
+              <tr>
+                  <td>[Cutting depth ap [mm]]</td>
+                  <td><input id="cutting_depth_input" type="text" onkeypress="if (event.key === 'Enter') { checkCuttingDepth(); }" onblur="checkCuttingDepth()" placeholder="Eingabefeld"></td>
+              </tr>
+              
+              <tr>
+                  <td><strong>[Results]</strong><td>
+              </tr>
+              
+              <tr>
+                  <td>[Roughness Rth[mm]]</td>
+                  <td id="roughness_field" class = "output_fields">[Roughness]</td>
+              </tr>
+              
+              <tr>
+                  <td>[Effective Diameter dEff[mm]]</td>
+                  <td id="effective_diameter" class = "output_fields">[effective diameter]</td>
+              </tr>
+              
+              
+          </tbody>
+      </table>
+        
+      <div id="cutting_diagram"></div>
+    
+
+
+      <table id="roghness_table" frame="border" width="500px">
+          <thead>
+
+          </thead>
+          <tbody>
+              <tr>
+                  <td class="bottom_table_header"><strong>Step width</strong></td>
+                  <td class="bottom_table_header"><strong>Roughness</strong></td>
+              </tr>
+              
+              <tr>
+                  <td class="step_width_table">..</td>
+                  <td class="roughness_table">..</td>
+              </tr>
+              
+              <tr>
+                  <td class="step_width_table">..</td>
+                  <td class="roughness_table">..</td>
+              </tr>
+              
+              <tr>
+                  <td class="step_width_table">..</td>
+                  <td class="roughness_table">..</td>
+              </tr>
+              
+              <tr>
+                  <td class="step_width_table">..</td>
+                  <td class="roughness_table">..</td>
+              </tr>
+              
+              <tr>
+                  <td class="step_width_table">..</td>
+                  <td class="roughness_table">..</td>
+              </tr>
+              
+              <tr>
+                  <td class="step_width_table">..</td>
+                  <td class="roughness_table">..</td>
+              </tr>
+
+              <tr>
+                <td class="step_width_table">..</td>
+                <td class="roughness_table">..</td>
+              </tr>
+
+              <tr>
+                <td class="step_width_table">..</td>
+                <td class="roughness_table">..</td>
+              </tr>
+            </tbody>
+      </table>
+
+      <div id="cutting_diagram" class="chart_container">
+        <canvas id="myChart"></canvas>
+      </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+      function resetRoughnessDiameter(){
+        document.getElementById("roughness_field").innerHTML = "[Roughness]";
+        document.getElementById("effective_diameter").innerHTML = "[effective diameter]";
+      }
+
+      function changeText() {
+        var text = document.getElementById("output_diameter");
+        var dropdown = document.getElementById("cutter_type");
+
+        var selectedOption = dropdown.value;
+        if (selectedOption == "Fräsername") {
+          text.innerHTML = "Eingabefeld";
+        } else if (selectedOption == "Radiusfräser Klein v 1") {
+          text.innerHTML = "1";
+        } else if (selectedOption == "Radiusfräser Klein v 2") {
+          text.innerHTML = "1";
+        }	else if (selectedOption == "Radiusfräser Klein v 3") {
+          text.innerHTML = "2";
+        }	else if (selectedOption == "Radiusfräser mittel v 1") {
+          text.innerHTML = "3";
+        }	else if (selectedOption == "Radiusfräser mittel v 2") {
+          text.innerHTML = "4";
+        }	else if (selectedOption == "Radiusfräser mittel v 3") {
+          text.innerHTML = "4";
+        }	else if (selectedOption == "Radiusfräser groß v 1") {
+          text.innerHTML = "6";
+        }	else if (selectedOption == "Radiusfräser groß v 2") {
+          text.innerHTML = "6";
+        }	else if (selectedOption == "Radiusfräser groß v 3") {
+          text.innerHTML = "8";
+        }
+        resetTable();
+        resetChart();
+        checkCuttingDepth();
+        checkStepWidth();
+        updateChart();
+        resetRoughnessDiameter();
+        
+
+        roughnessCheck();
+        effectiveDiameterCheck();
+      }
+    
+      function showError(){
+      document.getElementById("cutting_depth_input").value = "";
+      alert("Wrong value for cutting depth!");
+    }
+    
+      function checkCuttingDepth(){
+      var input = document.getElementById("cutting_depth_input").value;
+      var selectedOption = document.getElementById("cutter_type").value;
+      
+      var parsedInt = parseFloat(input);
+      
+      if(typeof(parsedInt) == "number"){
+      
+          if (selectedOption == "Radiusfräser Klein v 1") {
+          if(parsedInt > 0.2){
+            showError();
+          }
+        } else if (selectedOption == "Radiusfräser Klein v 2") {
+          if(parsedInt > 0.5){
+            showError();
+          }
+        }	else if (selectedOption == "Radiusfräser Klein v 3") {
+          if(parsedInt > 1) {
+            showError();
+          }
+        }	else if (selectedOption == "Radiusfräser mittel v 1") {
+          if(parsedInt > 1) {
+            showError();
+          }
+        }	else if (selectedOption == "Radiusfräser mittel v 2") {
+          if(parsedInt > 1) {
+            showError();
+          }
+        }	else if (selectedOption == "Radiusfräser mittel v 3") {
+          if(parsedInt > 2) {
+            showError();
+          }
+        }	else if (selectedOption == "Radiusfräser groß v 1") {
+          if(parsedInt > 2) {
+            showError();
+          }
+        }	else if (selectedOption == "Radiusfräser groß v 2") {
+          if(parsedInt > 3) {
+            showError();
+          }
+        }	else if (selectedOption == "Radiusfräser groß v 3") {
+          if(parsedInt > 4) {
+            showError();
+          }
+        }
+      }
+      else{
+      showError();
+      }
+      
+      resetRoughnessDiameter();
+      resetChart();
+
+      roughnessCheck();
+      effectiveDiameterCheck();
+    }
+    
+      function checkStepWidth(){
+        var diameter = document.getElementById("output_diameter").innerHTML;
+        var step_width = document.getElementById("step_input").value;
+        var diameter_int = parseInt(diameter);
+        var step_width_float = parseFloat(step_width);
+        
+        if (diameter_int < step_width_float){
+          document.getElementById("step_input").value = "";
+          alert("Step width should be smaller than diameter!");
+        }
+        resetTable();
+        resetChart();
+        resetRoughnessDiameter();
+
+        roughnessCheck();
+        effectiveDiameterCheck();
+      }
+    
+      function roughnessCheck(){
+        var diameter = document.getElementById("output_diameter").innerHTML;
+        var step_width = document.getElementById("step_input").value;
+        
+        if(diameter !== "Eingabefeld" && step_width){
+          var diameter_float = parseFloat(diameter);
+          
+          var step_width_float = parseFloat(step_width);
+          
+          var roughness = (diameter_float/2) - (Math.sqrt((Math.pow(diameter_float, 2) - Math.pow(step_width_float, 2)) / 4));
+          roughness = roughness.toFixed(4);
+          document.getElementById("roughness_field").innerHTML = roughness;
+        }
+
+        stepWidthRoughness();
+        updateChart();
+      }	
+    
+      function effectiveDiameterCheck(){
+      var diameter = document.getElementById("output_diameter").innerHTML;
+      var cutting_depth = document.getElementById("cutting_depth_input").value;
+      
+      if(diameter !== "Eingabefeld" && cutting_depth){
+        var diameter_float = parseFloat(diameter);
+        
+        var cutting_depth_float = parseFloat(cutting_depth);
+        
+        var effectiveDiameter = 2 * Math.sqrt(cutting_depth_float * (diameter_float - cutting_depth_float));
+        
+        effectiveDiameter = effectiveDiameter.toFixed(4);
+        document.getElementById("effective_diameter").innerHTML = effectiveDiameter;
+      }
+    }
+    
+      function stepWidthRoughness(){
+        var diameter = document.getElementById("output_diameter").innerHTML;
+        var step_width = document.getElementById("step_input").value;
+
+        if(step_width == "" || diameter == "Eingabefeld"){
+          return;
+        }
+
+
+        var step_width_list = document.getElementsByClassName("step_width_table");
+        var roughness_list = document.getElementsByClassName("roughness_table");
+
+        var diameter_float = parseFloat(diameter);
+        var step_width_float = parseFloat(step_width);
+
+        var step_num;
+        if(step_width_float <= 0.5){
+          step_num = 1;
+        }
+        else if(step_width_float <= 1){
+          step_num = 2;
+        }
+        else if(step_width_float <= 2){
+          step_num = 3;
+        }
+        else if(step_width_float <= 4){
+          step_num = 4;
+        }
+        else if(step_width_float <= 6){
+          step_num = 5;
+        }
+        else if(step_width_float <= 7){
+          step_num = 6;
+        }
+        else{
+          step_num = 7;
+        }
+        var step_length = parseFloat((step_width / step_num));
+        var current_step_length = 0;
+
+        for(let i = 0; i <= step_num; i++){
+          var step_length_fixed = current_step_length.toFixed(1);
+          var roughness = ((diameter_float/2) - (Math.sqrt((Math.pow(diameter_float, 2) - Math.pow(current_step_length, 2)) / 4))).toFixed(4);
+          step_width_list[i].innerHTML = current_step_length.toFixed(1);
+          roughness_list[i].innerHTML = roughness;
+
+          current_step_length += step_length;
+        }
+
+
+
+      }
+
+      function resetTable(){
+        var step_width_list = document.getElementsByClassName("step_width_table");
+        var roughness_list = document.getElementsByClassName("roughness_table");
+
+        for(let i = 0; i < step_width_list.length; i++){
+          step_width_list[i].innerHTML = "..";
+          roughness_list[i].innerHTML = "..";
+        }
+      }
+      
+      function resetChart(){
+        myChart.config.data.labels = []
+        myChart.config.data.datasets[0].data = [];
+
+        myChart.update();
+      }
+
+      function updateChart(){
+        var diameter = document.getElementById("output_diameter").innerHTML;
+        var step_width = document.getElementById("step_input").value;
+
+        var roughness_list = [];
+        var step_width_list = [0,1,2,3,4,5,6,7,8];
+
+        if(diameter !== "Eingabefeld" && step_width){
+          step_width_list = [];
+
+          var step_width_float = parseFloat(step_width);
+          var diameter_float = parseFloat(diameter);
+
+          var per_step_distance = step_width_float / 8;
+          var current_step_distance = 0;
+
+          for (let i = 0; i < 8; i ++){
+            step_width_list.push(current_step_distance);
+            current_step_distance += per_step_distance;
+          }
+          step_width_list.push(step_width_float);
+
+          for (let i = 0; i < 9; i++){
+            var roughness_value = (diameter_float/2) - (Math.sqrt((Math.pow(diameter_float, 2) - Math.pow(step_width_list[i], 2)) / 4));
+            roughness_list.push(roughness_value);
+          }
+        }
+
+        
+        myChart.config.data.labels = step_width_list;
+        myChart.config.data.datasets[0].data = roughness_list;
+
+        myChart.update();
+
+      }
+
+      const ctx = document.getElementById('myChart');
+      var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [0,1,2,3,4,5,6,7,8],
+          datasets: [{
+            label: '[Graph of possible roughtnesses]',
+            data: [],
+            borderWidth: 3,
+            borderColor: '#000000',
+            pointStyle: false,
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Roughness",
+              }
+            },
+            x: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: "Step width",
+              }
+            }
+            
+          }
+        }
+      });
+    </script>
+
+  </body>
+
+</html>
+
