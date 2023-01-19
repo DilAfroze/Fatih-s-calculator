@@ -74,7 +74,9 @@
           </tbody>
       </table>
         
-      <div id="cutting_diagram"></div>
+      <div id="cutting_diagram">
+        <canvas id="cutting_canvas"></canvas> 
+      </div>
     
 
 
@@ -139,6 +141,75 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+      var canvas = document.getElementById('cutting_canvas');
+      var c = canvas.getContext('2d');
+
+      function clearCanvas(){
+        c.clearRect(0,0,640,400);
+        canvas.height = 400;
+        canvas.width = 640;
+
+        //Making the base
+        c.fillStyle = "#2B3467";
+        c.fillRect(0 , 200 , 640, 200);
+      }
+      
+      //Circle class
+      function Circle(x, y, radius){
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+
+        this.draw = function(){
+          c.beginPath();
+          c.fillStyle = "#BAD7E9";
+          c.arc(x,y,radius, 0, Math.PI * 2, false);
+          c.fill();
+        }
+      }
+
+      function drawDiagram(){
+        var diameter = document.getElementById("output_diameter").innerHTML;
+        var step_width = document.getElementById("step_input").value;
+        var cutting_depth = document.getElementById("cutting_depth_input").value;
+
+        if(diameter != "Eingabefeld" && step_width != "Eingabefeld" && cutting_depth != "Eingabefeld"){
+          var scale_multiplier = 10;
+          var diameter_float = parseFloat(diameter) * scale_multiplier;
+          var step_width_float = parseFloat(step_width) * scale_multiplier;
+          var cutting_depth_float = parseFloat(cutting_depth) * scale_multiplier;
+          var cutter_base_height = 200 - (diameter_float / 2) + cutting_depth_float;
+          
+
+          //drawing cuts
+          var circles = []
+          var current_distance = 400 + (diameter_float / 2);
+
+          while(current_distance > -diameter_float){
+            var new_cut = new Circle(current_distance, cutter_base_height, diameter_float/2);
+            circles.push(new_cut);
+
+            current_distance -= step_width_float;
+          }
+
+          for(let i = 0; i < circles.length; i++){
+            circles[i].draw();
+          }
+          
+          //drawing cutter
+          c.fillStyle = "#FFC93C";
+          c.fillRect(400, 0, diameter_float, cutter_base_height);
+          c.beginPath();
+          c.arc(400 + diameter_float / 2, cutter_base_height, diameter_float / 2, 0, Math.PI * 2, false);
+          c.fill();
+
+
+        }
+      }
+      clearCanvas();
+      drawDiagram();
+
+
       function resetRoughnessDiameter(){
         document.getElementById("roughness_field").innerHTML = "[Roughness]";
         document.getElementById("effective_diameter").innerHTML = "[effective diameter]";
@@ -278,6 +349,8 @@
 
         stepWidthRoughness();
         updateChart();
+        clearCanvas();
+        drawDiagram();
       }	
     
       function effectiveDiameterCheck(){
@@ -436,6 +509,7 @@
         }
       });
     </script>
+
 
   </body>
 
